@@ -1,6 +1,7 @@
 using System.IO;
 using System.Xml;
 using ThoughtWorks.CruiseControl.Core.Util;
+using Exortech.NetReflector;
 
 namespace ThoughtWorks.CruiseControl.Core.Tasks
 {
@@ -9,13 +10,14 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
     /// </summary>
 	public class DevenvTaskResult : ProcessTaskResult
 	{
+        private TaskBase _task = null;
         /// <summary>
         /// Initializes a new instance of the <see cref="DevenvTaskResult" /> class.	
         /// </summary>
         /// <param name="result">The result.</param>
         /// <remarks></remarks>
-		public DevenvTaskResult(ProcessResult result) : 
-			base(result){}
+		public DevenvTaskResult(ProcessResult result,TaskBase task) :
+            base(result) { _task = task; }
 
         /// <summary>
         /// Gets the data.	
@@ -24,7 +26,7 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
         /// <remarks></remarks>
 		public override string Data
 		{
-			get { return TransformDevenvOutput(result.StandardOutput, result.StandardError); }
+			get { return TransformDevenvOutput(result.StandardOutput, result.StandardError,_task); }
 		}
 
         /// <summary>
@@ -33,11 +35,17 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
         /// <param name="devenvOutput">devenv's standard output with platform-specific newlines</param>
         /// <param name="devenvError">devenv's standard error with platform-specific newlines</param>
         /// <returns>the resulting build report fragment</returns>
-        private static string TransformDevenvOutput(string devenvOutput, string devenvError)
+        private static string TransformDevenvOutput(string devenvOutput, string devenvError,TaskBase task)
 		{
 			StringWriter output = new StringWriter();
 			XmlWriter writer = new XmlTextWriter(output);
 			writer.WriteStartElement("buildresults");
+
+            if (task != null)
+            {
+                new ReflectorTypeAttribute("task").Write(writer, task);
+            }
+
 			WriteContent(writer, devenvOutput, false);
             WriteContent(writer, devenvError, true);
             writer.WriteEndElement();

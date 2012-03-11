@@ -158,18 +158,19 @@ namespace ThoughtWorks.CruiseControl.CCTrayLib.Presentation
             }
 
             string nodeKey = value.Identifier.ToString();
+            string nodeText = value.Name + (value.Description!=null? "[" + value.Description + "]" : "");
             bool newNode = false;
             if (node == null)
             {
                 // Need to add a whole new node
-                node = nodes.Insert(position, nodeKey, value.Name);
+                node = nodes.Insert(position, nodeKey, nodeText);
                 newNode = true;
             }
             newKeys.Add(nodeKey);
 
             // Update the node
             node.Tag = value;
-            node.Text = value.Name;
+            node.Text = nodeText;
             node.ImageKey = value.Status.ToString();
             node.SelectedImageKey = node.ImageKey;
 

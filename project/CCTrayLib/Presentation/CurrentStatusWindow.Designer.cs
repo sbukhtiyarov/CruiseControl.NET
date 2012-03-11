@@ -116,7 +116,7 @@
             this.splitContainer1.Panel2.Controls.Add(this.statusDetails);
             this.splitContainer1.Panel2.Controls.Add(this.statusProgress);
             this.splitContainer1.Size = new System.Drawing.Size(533, 341);
-            this.splitContainer1.SplitterDistance = 177;
+            this.splitContainer1.SplitterDistance = 263;
             this.splitContainer1.TabIndex = 2;
             // 
             // statusExplorer
@@ -127,7 +127,7 @@
             this.statusExplorer.Location = new System.Drawing.Point(0, 0);
             this.statusExplorer.Name = "statusExplorer";
             this.statusExplorer.SelectedImageIndex = 0;
-            this.statusExplorer.Size = new System.Drawing.Size(177, 341);
+            this.statusExplorer.Size = new System.Drawing.Size(263, 341);
             this.statusExplorer.TabIndex = 0;
             this.statusExplorer.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.statusExplorer_AfterSelect);
             // 
@@ -138,7 +138,7 @@
             this.statusDetails.Location = new System.Drawing.Point(0, 23);
             this.statusDetails.Name = "statusDetails";
             this.statusDetails.PropertySort = System.Windows.Forms.PropertySort.Alphabetical;
-            this.statusDetails.Size = new System.Drawing.Size(352, 318);
+            this.statusDetails.Size = new System.Drawing.Size(266, 318);
             this.statusDetails.TabIndex = 0;
             this.statusDetails.ToolbarVisible = false;
             // 
@@ -147,7 +147,7 @@
             this.statusProgress.Dock = System.Windows.Forms.DockStyle.Top;
             this.statusProgress.Location = new System.Drawing.Point(0, 0);
             this.statusProgress.Name = "statusProgress";
-            this.statusProgress.Size = new System.Drawing.Size(352, 23);
+            this.statusProgress.Size = new System.Drawing.Size(266, 23);
             this.statusProgress.Style = System.Windows.Forms.ProgressBarStyle.Continuous;
             this.statusProgress.TabIndex = 1;
             // 
@@ -169,7 +169,6 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(statusBar);
             this.Controls.Add(commands);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "CurrentStatusWindow";
             this.Text = "Current Status for ...";
