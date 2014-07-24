@@ -59,6 +59,7 @@
         {
             this.Tasks = new ITask[0];
             this.ElseTasks = new ITask[0];
+            this.ContinueOnFailure = true;
         }
         #endregion
 
@@ -103,6 +104,16 @@
         /// </summary>
         /// <value>The logger.</value>
         public ILogger Logger { get; set; }
+        #endregion
+
+        #region ContinueOnFailure
+        /// <summary>
+        /// Should the tasks continue to run, even if there is a failure?
+        /// </summary>
+        /// <version>1.9</version>
+        /// <default>true</default>
+        [ReflectorProperty("continueOnFailure", Required = false)]
+        public bool ContinueOnFailure { get; set; }
         #endregion
         #endregion
 
@@ -411,8 +422,12 @@
                 logger.Debug("Starting task '{0}'", taskName);
                 try
                 {
-                    // Start the actual task
                     var taskResult = result.Clone();
+
+                    // must reset the status so that we check for the current task failure and not a previous one
+                    taskResult.Status = IntegrationStatus.Unknown;
+
+                    // Start the actual task
                     var task = tasks[loop];
                     this.RunTask(task, taskResult, new RunningSubTaskDetails(loop, runningIfTasks, result));
                     result.Merge(taskResult);
@@ -433,6 +448,8 @@
                 else
                 {
                     failureCount++;
+                    if (!ContinueOnFailure)
+                        break;
                 }
             }
 

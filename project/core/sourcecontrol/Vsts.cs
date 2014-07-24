@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Exortech.NetReflector;
 using ThoughtWorks.CruiseControl.Core.Util;
+using ThoughtWorks.CruiseControl.Core.Config;
 
 namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
 {
@@ -29,13 +30,16 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
     /// Foundation Server Plugin</link>).
     /// </remarks>
     [ReflectorType("vsts")]
-    public class Vsts : ProcessSourceControl
+    public class Vsts : ProcessSourceControl, IConfigurationValidation
     {
         #region Constants
-
+        private const string VS2013_32_REGISTRY_PATH = @"Software\Microsoft\VisualStudio\12.0";
+        private const string VS2012_32_REGISTRY_PATH = @"Software\Microsoft\VisualStudio\11.0";
         private const string VS2010_32_REGISTRY_PATH = @"Software\Microsoft\VisualStudio\10.0";
         private const string VS2008_32_REGISTRY_PATH = @"Software\Microsoft\VisualStudio\9.0";
         private const string VS2005_32_REGISTRY_PATH = @"Software\Microsoft\VisualStudio\8.0";
+        private const string VS2013_64_REGISTRY_PATH = @"Software\Wow6432Node\Microsoft\VisualStudio\12.0";
+        private const string VS2012_64_REGISTRY_PATH = @"Software\Wow6432Node\Microsoft\VisualStudio\11.0";
         private const string VS2010_64_REGISTRY_PATH = @"Software\Wow6432Node\Microsoft\VisualStudio\10.0";
         private const string VS2008_64_REGISTRY_PATH = @"Software\Wow6432Node\Microsoft\VisualStudio\9.0";
         private const string VS2005_64_REGISTRY_PATH = @"Software\Wow6432Node\Microsoft\VisualStudio\8.0";
@@ -192,10 +196,10 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
                     workspaceName = DEFAULT_WORKSPACE_NAME;
                 }
 
-                if (string.IsNullOrEmpty(this.Username))
-                {
-                    return workspaceName + ";" + BuildTfsUsername();
-                }
+                //if (string.IsNullOrEmpty(this.Username))
+                //{
+                //    return workspaceName + ";" + BuildTfsUsername();
+                //}
 
                 return workspaceName;
             }
@@ -240,7 +244,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
         {
             if (!ProjectExists(from))
             {
-                Log.Error(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Project {0} is not valid on {1} TFS server", ProjectPath, Server));
+                Log.Error(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Project {0} is not valid on {1} TFS server", ProjectPath, Server));
                 throw new CruiseControlException("Project Name is not valid on this TFS server");
             }
 
@@ -300,7 +304,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
                     LookForErrorReturns(executor.Execute(CreateWorkSpaceProcessInfo(result)));
 
                     //Map Workspace
-                    Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
+                    Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
                     LookForErrorReturns(executor.Execute(MapWorkSpaceProcessInfo(result)));
                 }
             }
@@ -311,14 +315,14 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
                 LookForErrorReturns(executor.Execute(CreateWorkSpaceProcessInfo(result)));
 
                 //Map Workspace
-                Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
+                Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
                 LookForErrorReturns(executor.Execute(MapWorkSpaceProcessInfo(result)));
             }
 
             if (!workspaceStatus.WorkspaceIsMappedCorrectly)
             {
                 //Map Workspace
-                Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
+                Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Mapping Workspace {0} to {1}", Workspace, WorkingDirectory));
                 LookForErrorReturns(executor.Execute(MapWorkSpaceProcessInfo(result)));
             }
 
@@ -335,7 +339,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
         private bool ProjectExists(IIntegrationResult result)
         {
             //Check for  Workspace
-            Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Checking if Project {0} exists", ProjectPath));
+            Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Checking if Project {0} exists", ProjectPath));
             ProcessResult pr = executor.Execute(CheckProjectProcessInfo(result));
             LookForErrorReturns(pr);
 
@@ -344,7 +348,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
 
         private TfsWorkspaceStatus GetWorkspaceStatus(IIntegrationResult result)
         {
-            Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture,"[TFS] Fetching Workspace {0} details", Workspace));
+            Log.Debug(string.Format(System.Globalization.CultureInfo.CurrentCulture, "[TFS] Fetching Workspace {0} details", Workspace));
             ProcessResult pr = executor.Execute(CheckWorkSpaceProcessInfo(result));
 
             LookForErrorReturns(pr);
@@ -500,7 +504,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
         {
             var buffer = new PrivateArguments("label");
             buffer.Add("/server:", Server);
-            buffer.AddQuote(result.Label, string.Format(System.Globalization.CultureInfo.CurrentCulture,"@{0}", ProjectPath));
+            buffer.AddQuote(result.Label, string.Format(System.Globalization.CultureInfo.CurrentCulture, "@{0}", ProjectPath));
             buffer.AddQuote(WorkingDirectory);
             buffer.Add("/recursive");
             buffer.Add("/comment:", "CCNet Build Label", true);
@@ -518,7 +522,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
             var buffer = new PrivateArguments("history", "-noprompt");
             buffer.Add("-server:", Server);
             buffer.AddQuote(ProjectPath);
-            buffer.Add(string.Format(System.Globalization.CultureInfo.CurrentCulture,"-version:D{0}~D{1}", FormatCommandDate(from.StartTime), FormatCommandDate(to.StartTime)));
+            buffer.Add(string.Format(System.Globalization.CultureInfo.CurrentCulture, "-version:D{0}~D{1}", FormatCommandDate(from.StartTime), FormatCommandDate(to.StartTime)));
             buffer.Add("-recursive");
             buffer.Add("-format:detailed");
 
@@ -574,7 +578,7 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
                 }
                 else
                 {
-                    throw new CruiseControlException(string.Format(System.Globalization.CultureInfo.CurrentCulture,"Code page {0} could not be parsed to an encoding via instruction : Encoding.GetEncoding(codePage)", CodePage));
+                    throw new CruiseControlException(string.Format(System.Globalization.CultureInfo.CurrentCulture, "Code page {0} could not be parsed to an encoding via instruction : Encoding.GetEncoding(codePage)", CodePage));
                 }
             }
 
@@ -582,9 +586,20 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
             return processInfo;
         }
 
+
         private string ReadTfFromRegistry()
         {
-            string registryValue = registry.GetLocalMachineSubKeyValue(VS2010_64_REGISTRY_PATH, VS_REGISTRY_KEY);
+            string registryValue = registry.GetLocalMachineSubKeyValue(VS2013_64_REGISTRY_PATH, VS_REGISTRY_KEY);
+
+            if (registryValue == null)
+            {
+                registryValue = registry.GetLocalMachineSubKeyValue(VS2012_64_REGISTRY_PATH, VS_REGISTRY_KEY);
+            }
+
+            if (registryValue == null)
+            {
+                registryValue = registry.GetLocalMachineSubKeyValue(VS2010_64_REGISTRY_PATH, VS_REGISTRY_KEY);
+            }
 
             if (registryValue == null)
             {
@@ -594,6 +609,16 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
             if (registryValue == null)
             {
                 registryValue = registry.GetLocalMachineSubKeyValue(VS2005_64_REGISTRY_PATH, VS_REGISTRY_KEY);
+            }
+
+            if (registryValue == null)
+            {
+                registryValue = registry.GetLocalMachineSubKeyValue(VS2013_32_REGISTRY_PATH, VS_REGISTRY_KEY);
+            }
+
+            if (registryValue == null)
+            {
+                registryValue = registry.GetLocalMachineSubKeyValue(VS2012_32_REGISTRY_PATH, VS_REGISTRY_KEY);
             }
 
             if (registryValue == null)
@@ -623,5 +648,47 @@ namespace ThoughtWorks.CruiseControl.Core.Sourcecontrol
 
         #endregion Private Members
 
+
+        public void Validate(IConfiguration configuration, ConfigurationTrace parent, IConfigurationErrorProcesser errorProcesser)
+        {
+            string ErrorInfo = "Invalid chars in TFS workspace name. Look at http://msdn.microsoft.com/en-us/library/aa980550.aspx#SourceControl for naming restrictions.";
+
+            bool AllOk = true;
+            System.Collections.Generic.List<string> badchars = new System.Collections.Generic.List<string>();
+
+            badchars.Add("/");
+            badchars.Add(":");
+            badchars.Add("<");
+            badchars.Add(">");
+            badchars.Add("|");
+            badchars.Add(@"\");
+            badchars.Add("*");
+            badchars.Add("?");
+            badchars.Add(";");
+
+
+            if (workspaceName.Length > 64)
+            {
+                AllOk = false;
+                ErrorInfo += System.Environment.NewLine + "Max length is 64 chars";
+            }
+            if (workspaceName.EndsWith(" "))
+            {
+                AllOk = false;
+                ErrorInfo += System.Environment.NewLine + "can not end with space";
+            }
+
+
+            foreach (string s in badchars)
+            {
+                if (workspaceName.Contains(s))
+                {
+                    AllOk = false;
+                    ErrorInfo += System.Environment.NewLine + "can not contain character " + s;
+                }
+            }
+
+            if (!AllOk) errorProcesser.ProcessError(ErrorInfo);
+        }
     }
 }
