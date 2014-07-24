@@ -334,7 +334,7 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
 			if (File.Exists(buildOutputFile))
 				result.AddTaskResult(new FileTaskResult(buildOutputFile) { WrapInCData=true} );
 
-			result.AddTaskResult(new DevenvTaskResult(processResult));
+			result.AddTaskResult(new DevenvTaskResult(processResult,this));
 			Log.Info("Devenv build complete.  Status: " + result.Status);
 
 			if (processResult.TimedOut)

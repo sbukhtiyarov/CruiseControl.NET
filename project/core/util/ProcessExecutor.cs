@@ -255,8 +255,7 @@ namespace ThoughtWorks.CruiseControl.Core.Util
 			{
 				try
 				{
-					CollectOutput(outLine.Data, stdOutput, outputStreamClosed, "standard-output");
-
+                    CollectOutput(outLine.Data, stdOutput, outputStreamClosed, "standard-output");
                     if (!string.IsNullOrEmpty(outLine.Data))
                     {
                         OnProcessOutput(new ProcessOutputEventArgs(ProcessOutputType.StandardOutput, outLine.Data));
@@ -274,8 +273,8 @@ namespace ThoughtWorks.CruiseControl.Core.Util
 			{
 				try
 				{
-					CollectOutput(outLine.Data, stdError, errorStreamClosed, "standard-error");
-
+                    string outLineData = outLine.Data != null ? String.Concat("Error: ", outLine.Data) : outLine.Data;
+                    CollectOutput(outLineData, stdOutput, errorStreamClosed, "standard-error");
                     if (!string.IsNullOrEmpty(outLine.Data))
                     {
                         OnProcessOutput(new ProcessOutputEventArgs(ProcessOutputType.ErrorOutput, outLine.Data));

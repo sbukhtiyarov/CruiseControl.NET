@@ -61,7 +61,7 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
         /// </summary>
         /// <remarks></remarks>
         public const int DefaultTimeout = 600;
-        private const string DefaultOutputFile = "nunit-results.xml";
+        private string DefaultOutputFile = "nunit-results-"+(Guid.NewGuid().ToString())+".xml";
         private readonly ProcessExecutor executor;
 
         /// <summary>

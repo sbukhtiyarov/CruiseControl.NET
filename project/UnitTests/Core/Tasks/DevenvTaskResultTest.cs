@@ -25,14 +25,14 @@ Build complete -- 1 errors, 0 warnings";
 "<message level=\"error\">Package 'Microsoft.VisualStudio.TeamFoundation.VersionControl.HatPackage, Microsoft.VisualStudio.TeamFoundation.VersionControl, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a' failed to load.</message>" +
 "</buildresults>";
 
-            DevenvTaskResult result = new DevenvTaskResult(ProcessResultFixture.CreateNonZeroExitCodeResult(stdOut, stdErr));
+            DevenvTaskResult result = new DevenvTaskResult(ProcessResultFixture.CreateNonZeroExitCodeResult(stdOut, stdErr),null);
             Assert.AreEqual(expected, result.Data);
 		}
 
 		[Test]
 		public void ShouldHandleSpecialCharacters()
 		{
-			DevenvTaskResult result = new DevenvTaskResult(ProcessResultFixture.CreateSuccessfulResult("<T>"));
+			DevenvTaskResult result = new DevenvTaskResult(ProcessResultFixture.CreateSuccessfulResult("<T>"),null);
 			Assert.AreEqual("<buildresults><message>&lt;T&gt;</message></buildresults>", result.Data);
 		}
 	}

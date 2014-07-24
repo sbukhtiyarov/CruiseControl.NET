@@ -142,7 +142,7 @@ namespace ThoughtWorks.CruiseControl.Core.Tasks
                 {
                     var Status = tasksDetails[loop];
 
-                    if (!Status.Finished)
+                    if (Status!=null && !Status.Finished)
                         Value += string.Format("[{0}] {1} --- ",
                                                 loop,
                                                 !string.IsNullOrEmpty(Status.Information)
